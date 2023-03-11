@@ -6,6 +6,7 @@ function Photoboot() {
     const photoRef = useRef(null)
     const stripRef = useRef(null)
     const productRef = useRef(null)
+    const countdownRef = useRef(null)
 
     const startVideo = () => {
         if (navigator.mediaDevices.getUserMedia) {
@@ -24,6 +25,12 @@ function Photoboot() {
         }
     }
 
+    /** 
+     * This iss a hidden 1:1 video mirror
+     * This is where a snapshot is taken and 
+     * its dataURL is extracted.
+     * 
+     * */ 
     const paintToCanvas = () => {
         let video = videoRef.current
         let photo = photoRef.current 
@@ -32,6 +39,7 @@ function Photoboot() {
 
         const width = 320
         const height = 240
+        
         photo.width = width
         photo.height = height
 
@@ -40,36 +48,84 @@ function Photoboot() {
         }, 1)
     }
 
+    const start = async () => {
+        const countdown = countdownRef.current
+        const seconds = 3
+        const gap = (seconds  * 1000) // every 3 seconds
+        
+        let count = 0
+        let total = 4
+        countdown.innerHTML = '1'
+        const intervalId = setInterval(() => {
+            count++
+            countdown.innerHTML = (count % 3) + 1
+
+            if ((count % seconds) == 0) {
+                takePhoto()
+                total--
+            }
+
+            if (total == 0) {
+                savePhoto()
+                // Stop loop (setInterval)
+                clearInterval(intervalId);
+                countdown.innerHTML = ''
+            }
+            
+            // count++
+        }, 1000)
+
+    }
+
     const takePhoto = () => {
         let photo = photoRef.current 
         let strip = stripRef.current 
-
         const data = photo.toDataURL("image/jpeg")
         const link = document.createElement("a")
+
         link.href = data 
         link.setAttribute("download", "myWebcam")
         link.innerHTML = `<img src='${data}' alt='thumbnail' />`
         strip.insertBefore(link, strip.firstChild)
     }
 
+    const printPhoto = async (imageUrl) => {
+        try {
+            const printWindow = await window.open('', 'PRINT')
+            
+            await printWindow.document.write(`<img src='${imageUrl}'>`)
+            await printWindow.document.close()  // for IE >= 10]
+            await printWindow.focus()           // for IE >= 10
+            await printWindow.print()
+            await printWindow.close()
+        } catch (e) {
+            console.log(e.stack)
+        }
+    }
+
     const savePhoto = async () => {
         const product = await productRef.current
+        const canvas = await html2canvas(product)
+        const imageUrl = await canvas.toDataURL("image/png", 1.0)
+        const fakeLink = await document.createElement("a")
+        const printArea = await document.getElementById('print-area')
+        const strip = await stripRef.current
+
+        canvas.height = 480
+        canvas.style.height = "480px"
         
-        await html2canvas(product).then(async(canvas) => {
-            const imageUrl = await canvas.toDataURL("image/png", 1.0)
-            const fakeLink = await document.createElement("a")
-            const printArea = await document.getElementById('print-area')
+        fakeLink.download = await "myWebcam"
+        fakeLink.href = await imageUrl 
 
-            canvas.height = 240
-            canvas.style.height = "240px"
-            
-            fakeLink.download = await "myWebcam"
-            fakeLink.href = await imageUrl 
+        printArea.innerHtml = await fakeLink 
+        // Download
+        await fakeLink.click()
+        // Print
+        await printPhoto(imageUrl)
 
-            printArea.innerHtml = await fakeLink 
-            await fakeLink.click()
-            await fakeLink.remove()
-        }).catch((err) => console.log(err))
+        await fakeLink.remove()
+
+        strip.innerHTML = await ''
     }
 
     useEffect(() => {
@@ -78,34 +134,36 @@ function Photoboot() {
 
   return (
     <div>
-        <video 
-            hidden
-            autoPlay={true} 
-            id="video-element"
-            ref={ videoRef }
-            onCanPlay={() => paintToCanvas()}
-        ></video>
+        <div class="video-container">
+            <video 
+                autoPlay={true} 
+                id="video-element"
+                ref={ videoRef }
+                onCanPlay={() => paintToCanvas()}
+            ></video>
+            <div ref={countdownRef} class="countdown"></div>
+        </div>
 
-        <canvas ref={ photoRef } />
+        <canvas hidden ref={ photoRef } />
 
         <div>
             <button
-                onClick={ () => takePhoto() }>
-                Take a Photo
+                onClick={ () => start() }>
+                Start
             </button>
         </div>
 
-        <div>
+        {/* <div>
             <button
                 onClick={ () => savePhoto() }
                 classs={ 'clear' }>
                 Save
             </button>
-        </div>
+        </div> */}
 
         <div ref={ productRef } id='product-container'>
             <div className={ 'frame' } >
-                <img src={ "/images/frame-1.png" }  alt="frame" />
+                <img src={ "/images/frame-2.png" }  alt="frame" />
             </div>
             <div className={ 'frame-photo' }>
                 <div ref={ stripRef }></div>
