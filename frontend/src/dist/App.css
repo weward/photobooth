@@ -8,7 +8,8 @@
 } */
 
 /* @media (prefers-reduced-motion: no-preference) { */
-  /* .App-logo {
+
+/* .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 } */
@@ -66,7 +67,8 @@ ul.nav-menu > li {
   opacity: 75%;
   filter: blur(10px);
   -webkit-filter: blur(10px);
-  animation: blinker 1s linear infinite;
+  -webkit-animation: blinker 1s linear infinite;
+          animation: blinker 1s linear infinite;
 }
 
 #video-element {
@@ -128,6 +130,12 @@ ul.nav-menu > li {
 .frame-photo > div > a {
   text-align: center;
   height: 240px;
+}
+
+@-webkit-keyframes blinker {
+  50% {
+    opacity: 0;
+  }
 }
 
 @keyframes blinker {

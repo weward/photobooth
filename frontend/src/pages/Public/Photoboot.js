@@ -63,7 +63,6 @@ function Photoboot() {
          * countdown is always minus 2 seconds of (gap)
          */
         const gap = 5 
-        
         let count = 0 // per second
         let total = 4 // photos to capture
         countdown.innerHTML = await ''
@@ -73,16 +72,16 @@ function Photoboot() {
             countdown.innerHTML = await (count <= (gap - 2)) ?  count : '' // display
             
             // one second before gap
-            if (await (count == (gap-1))) {
+            if (await (count === (gap-1))) {
                 await takePhoto()
             }
             // every gap 
-            if (await count == gap) {
+            if (await count === gap) {
                 await total--
                 count = await 0
             }
             // reached (total) photos to take
-            if (await total == 0) {
+            if (await total === 0) {
                 await savePhoto()
                 // Stop loop (setInterval)
                 await clearInterval(intervalId);
@@ -90,7 +89,6 @@ function Photoboot() {
                 startBtn.style.display = await "initial"
             }
         }, 1000)
-
     }
 
     const takePhoto = () => {
@@ -170,6 +168,7 @@ function Photoboot() {
                 id="video-element"
                 ref={ videoRef }
                 onCanPlay={() => paintToCanvas()}
+                className="mx-auto"
             ></video>
             <div ref={countdownRef} className="countdown"></div>
         </div>
@@ -179,8 +178,9 @@ function Photoboot() {
         <div>
             <button 
                 ref={ startBtnRef }
-                onClick={ () => start() }>
-                Start
+                onClick={ () => start() }
+                className="rounded bg-violet-500 px-10 py-4 text-white font-bold my-10">
+                START
             </button>
         </div>
 

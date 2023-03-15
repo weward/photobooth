@@ -14,9 +14,9 @@ export const PublicRoutes =  [
         component: <Home/>,
     },
     {
-        _uid: "public-photoboot",
-        name: "Photoboot",
-        path: "/photoboot",
+        _uid: "public-photobooth",
+        name: "Photobooth",
+        path: "/photobooth",
         component: <Photoboot/>,
     },
     {
