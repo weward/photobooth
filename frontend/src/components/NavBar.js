@@ -5,7 +5,7 @@ import RouteList from '../Routes'
 function NavBar() {
   return (
     <div>
-      <ul class="nav-menu">
+      <ul className="nav-menu">
         <li><Link to="/">Home</Link></li>
         <li><Link to="/photoboot">Photoboot</Link></li>
         <li><Link to="/about">About</Link></li>

@@ -55,6 +55,24 @@ ul.nav-menu > li {
   position: relative;
 }
 
+.flash {
+  position: absolute;
+  top: 0;
+  left: 21%;
+  border: 60px solid #ffffff;
+  z-index: 999;
+  width: 378px;
+  height: 256px;
+  opacity: 70%;
+  filter: blur(10px);
+  -webkit-filter: blur(10px);
+  animation: blinker 1s linear infinite;
+}
+
+#video-element {
+  z-index: 1;
+}
+
 .countdown {
   position: absolute;
   top: 25%;
@@ -99,4 +117,10 @@ ul.nav-menu > li {
 .frame-photo > div > a {
   text-align: center;
   height: 240px;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
 }
