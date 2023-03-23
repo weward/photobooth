@@ -1,7 +1,9 @@
-import {React, useEffect, useRef} from 'react'
+import {React, useEffect, useState, useRef} from 'react'
 import html2canvas from 'html2canvas'
 
 function Photoboot() {
+    const [cameraPermitted, setCameraPermitted] = useState(true)
+    const [streamObj, setStreamObj] = useState(null)
     const startBtnRef = useRef(null)
     const videoRef = useRef(null)
     const photoRef = useRef(null)
@@ -10,20 +12,34 @@ function Photoboot() {
     const countdownRef = useRef(null)
     const flashRef = useRef(null)
 
-    const startVideo = () => {
+    /** Check if Camera is existing and has permission */
+    const checkCameraAvailability = async () => {
+        await navigator.permissions.query({ name: 'camera'})
+        .then(async (res) => {
+            if (res.state === 'granted') {
+                await setCameraPermitted(true)
+            } else {
+                await setCameraPermitted(false)
+            }
+        })
+    }
+
+    const startVideo = async () => {
         if (navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia({video: true})
-                .then((stream) => {
-                    let video = videoRef.current
-                    video.srcObject = stream
-                    video.onloadedmetadata = function(e) {
-                        video.play();
-                    };
-                })
-                .catch((error) => {
-                    console.log("[Webcam Connection Failed]")
-                    console.log(error)
-                })
+            .then((stream) => {
+                setStreamObj(stream)
+
+                let video = videoRef.current
+                video.srcObject = stream
+                video.onloadedmetadata = function(e) {
+                    video.play();
+                };
+            })
+            .catch((error) => {
+                console.log("[Webcam Connection Failed]")
+                console.log(error)
+            })
         }
     }
 
@@ -51,6 +67,13 @@ function Photoboot() {
     }
 
     const start = async () => {
+        // Check if Camera is available
+        await checkCameraAvailability()
+
+        if (!cameraPermitted) {
+            return
+        }
+
         const countdown = countdownRef.current
         const startBtn = startBtnRef.current
         // hide (startBtn)
@@ -150,12 +173,11 @@ function Photoboot() {
         await flash.classList.add('flash')
         setTimeout(() => {
             flash.classList.remove('flash')
-        }, 200);
-        
-
+        }, 200)
     }
 
     useEffect(() => {
+        checkCameraAvailability()
         startVideo()
     }, [])
 
