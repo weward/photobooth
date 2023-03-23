@@ -1,5 +1,6 @@
 import {React, useEffect, useState, useRef} from 'react'
 import html2canvas from 'html2canvas'
+import { PrimaryButton, DefaultButton } from '../../components/elements/Buttons'
 
 function Photoboot() {
     const [cameraPermitted, setCameraPermitted] = useState(true)
@@ -71,6 +72,7 @@ function Photoboot() {
         await checkCameraAvailability()
 
         if (!cameraPermitted) {
+            alert('To use the camera, please enable the browser permission associated to it')
             return
         }
 
@@ -198,21 +200,12 @@ function Photoboot() {
         <canvas hidden ref={ photoRef } />
 
         <div>
-            <button 
+            <PrimaryButton 
                 ref={ startBtnRef }
-                onClick={ () => start() }
-                className="rounded bg-violet-500 px-10 py-4 text-white font-bold my-10">
+                onClick={ () => start() }>
                 START
-            </button>
+            </PrimaryButton>
         </div>
-
-        {/* <div>
-            <button
-                onClick={ () => savePhoto() }
-                classs={ 'clear' }>
-                Save
-            </button>
-        </div> */}
 
         <div ref={ productRef } id='product-container'>
             <div className={ 'frame' } >
